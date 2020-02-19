@@ -11,7 +11,8 @@ jdk:
   - openjdk10
   - openjdk11
 
-end:
+env:
+  - JULIA_COPY_STACKS=0
   - JULIA_COPY_STACKS=1
 
 matrix:
