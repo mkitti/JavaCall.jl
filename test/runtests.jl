@@ -145,8 +145,8 @@ end
 # However, since Java and Julia memory are not linked, and manual gc() is required.
 gc()
 for i in 1:100000
-	a=JString("A"^10000); #deleteref(a);
-	if (i%10000 == 0); gc(); end
+    a=JString("A"^10000); #deleteref(a);
+    if (i%10000 == 0); gc(); end
 end
 
 @testset "sinx_1" begin
@@ -230,6 +230,13 @@ end
     @test isa(narrow(o), JString)
 end
 
+@testset "roottask" begin
+    @test JavaCall.isroottask()
+    if get(Base.ENV,"JULIA_COPY_STACKS","") ∉ ("1","yes")
+        @test (@sync @async !JavaCall.isroottask()).result
+        @test_throws CompositeException (@sync @async JavaCall.assertroottask()).result
+    end
+end
 
 # At the end, unload the JVM before exiting
 JavaCall.destroy()
