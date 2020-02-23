@@ -4,10 +4,12 @@ using JavaCall
 import Dates
 using Base.GC: gc
 
-
-JavaCall.init(["-Djava.class.path=$(@__DIR__)"])
-# JavaCall.init(["-verbose:gc","-Djava.class.path=$(@__DIR__)"])
-# JavaCall.init()
+@testset "init" begin
+#    @test JavaCall.init(["-Djava.class.path=$(@__DIR__)"])==nothing
+    @test (@sync @async JavaCall.init(["-Djava.class.path=$(@__DIR__)"])==nothing).result
+    # JavaCall.init(["-verbose:gc","-Djava.class.path=$(@__DIR__)"])
+    # JavaCall.init()
+end
 
 System = @jimport java.lang.System
 @info "Java Version: ", jcall(System, "getProperty", JString, (JString,), "java.version")
@@ -237,6 +239,7 @@ end
         @test_throws CompositeException (@sync @async JavaCall.assertroottask()).result
     end
 end
+
 
 # At the end, unload the JVM before exiting
 JavaCall.destroy()

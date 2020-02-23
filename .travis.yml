@@ -2,6 +2,7 @@ language: julia
 os:
   - linux
   - osx
+  - windows
 julia:
   - 1.0
   - 1.3
@@ -23,6 +24,7 @@ branches:
   only:
     - master
     - test_root_task
+    - remove_assert
     - /release-.*/
 
 notifications:
