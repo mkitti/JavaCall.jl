@@ -5,8 +5,8 @@ import Dates
 using Base.GC: gc
 
 @testset "init" begin
-#    @test JavaCall.init(["-Djava.class.path=$(@__DIR__)"])==nothing
-    @test (@sync @async JavaCall.init(["-Djava.class.path=$(@__DIR__)"])==nothing).result
+    @test JavaCall.init(["-Djava.class.path=$(@__DIR__)"])==nothing
+#    @test (@sync @async JavaCall.init(["-Djava.class.path=$(@__DIR__)"])==nothing).result
     # JavaCall.init(["-verbose:gc","-Djava.class.path=$(@__DIR__)"])
     # JavaCall.init()
 end
