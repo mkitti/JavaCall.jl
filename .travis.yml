@@ -24,10 +24,8 @@ jobs:
     env: JULIA_COPY_STACKS=0
   - os: windows
     env: JULIA_COPY_STACKS=1
-
-matrix:
   allow_failures:
-    - julia_version: nightly
+    - julia: nightly
 
 branches:
   only:
