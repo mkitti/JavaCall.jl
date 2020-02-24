@@ -168,7 +168,11 @@ const ROOT_TASK_ERROR = JavaCallError(
 
 # JavaCall must run on the root Task or JULIA_COPY_STACKS is enabled
 isroottask() = JULIA_COPY_STACKS || Base.roottask === Base.current_task()
-assertroottask() = isroottask() ? nothing : throw(ROOT_TASK_ERROR)
+@static if Sys.iswindows()
+    assertroottask() = nothing
+else
+    assertroottask() = isroottask() ? nothing : throw(ROOT_TASK_ERROR)
+end
 
 isloaded() = isdefined(JavaCall, :jnifunc) && isdefined(JavaCall, :penv) && penv != C_NULL
 

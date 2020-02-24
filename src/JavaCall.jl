@@ -36,7 +36,7 @@ function __init__()
                 "Either use Julia v1.0.x, or v1.3.0 or higher.\n"*
                 "For 1.3 onwards, please also set the environment variable `JULIA_COPY_STACKS` to be `1` or `yes`")
     end
-    if VERSION ≥ v"1.3-" && ! JULIA_COPY_STACKS
+    if VERSION ≥ v"1.3-" && ! Sys.iswindows() && ! JULIA_COPY_STACKS
         @warn("JavaCall needs the environment variable `JULIA_COPY_STACKS` to be `1` or `yes`.\n"*
               "Calling the JVM may result in undefined behavior.")
     end
