@@ -1,7 +1,7 @@
 language: julia
 os:
-        #  - linux
-        #  - osx
+  - linux
+  - osx
   - windows
 before_install:
   - source ${TRAVIS_BUILD_DIR}/test/windows_java.sh
@@ -9,14 +9,21 @@ julia:
   - 1.0
   - 1.3
   - nightly
-jdk:
-  - oraclejdk8
-  - openjdk10
-  - openjdk11
 
 env:
   - JULIA_COPY_STACKS=0
   - JULIA_COPY_STACKS=1
+
+jobs:
+  exclude:
+  - os: linux
+    env: JULIA_COPY_STACKS=0
+  - os: mac
+    env: JULIA_COPY_STACKS=0
+  - julia: 1.0
+    env: JULIA_COPY_STACKS=0
+  - os: windows
+    env: JULIA_COPY_STACKS=1
 
 matrix:
   allow_failures:
