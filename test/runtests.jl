@@ -5,9 +5,23 @@ import Dates
 using Base.GC: gc
 
 
-JavaCall.init(["-Djava.class.path=$(@__DIR__)"])
-# JavaCall.init(["-verbose:gc","-Djava.class.path=$(@__DIR__)"])
-# JavaCall.init()
+macro testasync(x)
+    :( @test (@sync @async eval($x)).result ) |> esc
+end
+macro syncasync(x)
+    :( (@sync @async eval($x)).result ) |> esc
+end
+
+
+@testset "initialization" begin
+    if JavaCall.JULIA_COPY_STACKS || Sys.iswindows()
+        @testasync JavaCall.init(["-Djava.class.path=$(@__DIR__)"])==nothing
+    else
+        @test JavaCall.init(["-Djava.class.path=$(@__DIR__)"])==nothing
+    end
+    # JavaCall.init(["-verbose:gc","-Djava.class.path=$(@__DIR__)"])
+    # JavaCall.init()
+end
 
 System = @jimport java.lang.System
 @info "Java Version: ", jcall(System, "getProperty", JString, (JString,), "java.version")
@@ -46,6 +60,16 @@ end
     @test 1.0 ≈ jcall(jlm, "min", jdouble, (jdouble,jdouble), 1,2)
     @test 1 == jcall(jlm, "abs", jint, (jint,), -1)
 end
+
+@testset "static_method_call_async_1" begin
+    jlm = @jimport "java.lang.Math"
+    if JavaCall.JULIA_COPY_STACKS || Sys.iswindows()
+        @testasync 1.0 ≈ jcall(jlm, "sin", jdouble, (jdouble,), pi/2)
+        @testasync 1.0 ≈ jcall(jlm, "min", jdouble, (jdouble,jdouble), 1,2)
+        @testasync 1 == jcall(jlm, "abs", jint, (jint,), -1)
+    end
+end
+
 
 @testset "instance_methods_1" begin
     jnu = @jimport java.net.URL
@@ -230,6 +254,14 @@ end
     @test isa(narrow(o), JString)
 end
 
+@testset "isroottask_1" begin
+    @test JavaCall.isroottask()
+    @testasync JavaCall.JULIA_COPY_STACKS || ! JavaCall.isroottask()
+    if ! JavaCall.JULIA_COPY_STACKS && ! Sys.iswindows()
+        @test_throws CompositeException @syncasync JavaCall.assertroottask()
+        @warn "Ran tests for root Task only. REPL and @async are not expected to work with JavaCall. Set JULIA_COPY_STACKS=1 in the environment to test @async function."
+    end
+end
 
 # At the end, unload the JVM before exiting
 JavaCall.destroy()

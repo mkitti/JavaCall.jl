@@ -30,6 +30,7 @@ jobs:
 branches:
   only:
     - master
+    - test_async
     - /release-.*/
 
 notifications:
