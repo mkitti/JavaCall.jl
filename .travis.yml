@@ -3,6 +3,9 @@ os:
   - linux
   - osx
   - windows
+before_install:
+  - bash ${TRAVIS_BUILD_DIR}/test/windows_java.sh
+    if os = windows
 julia:
   - 1.0
   - 1.3
