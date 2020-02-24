@@ -17,6 +17,7 @@ jdk:
 env:
   - JULIA_COPY_STACKS=0
   - JULIA_COPY_STACKS=1
+  - JAVA_HOME="C:\Program Files\OpenJDK\openjdk-11.0.5_10"
 
 matrix:
   allow_failures:

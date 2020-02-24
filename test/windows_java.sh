@@ -6,3 +6,4 @@ if [ $TRAVIS_OS_NAME == "windows" ]; then
     #choco install openjdk11 -params 'installdir=c:\\jdk' -y
     choco install openjdk11
 fi
+echo $JAVA_HOME
