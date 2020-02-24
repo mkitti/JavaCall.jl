@@ -16,8 +16,6 @@ env:
 
 jobs:
   exclude:
-  - os: linux
-    env: JULIA_COPY_STACKS=0
   - os: mac
     env: JULIA_COPY_STACKS=0
   - julia: 1.0
@@ -25,7 +23,9 @@ jobs:
   - os: windows
     env: JULIA_COPY_STACKS=1
   allow_failures:
-    - julia: nightly
+  - julia: nightly
+  - os: linux
+    env: JULIA_COPY_STACKS=0
 
 branches:
   only:
