@@ -6,6 +6,6 @@ if [ $TRAVIS_OS_NAME == "windows" ]; then
     #choco install openjdk11 -params 'installdir=c:\\jdk' -y
     choco install openjdk11
     #export JAVA_HOME="C:\Program Files\OpenJDK\openjdk-11.0.5_10"
-    export JAVA_HOME=`powershell -c "Import-Module \"\\$env:ChocolateyInstall\\helpers\\chocolateyInstaller.psm1\" -Force; Get-EnvironmentVariable -Name 'JAVA_HOME' -Scope Machine"`
+    export JAVA_HOME=`ls "C:\\Program Files\\OpenJDK"`
 fi
 echo $JAVA_HOME
