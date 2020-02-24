@@ -14,7 +14,7 @@ end
 
 
 @testset "initialization" begin
-    if JavaCall.JULIA_COPY_STACKS || Sys.iswindows()
+    if JavaCall.JULIA_COPY_STACKS
         @testasync JavaCall.init(["-Djava.class.path=$(@__DIR__)"])==nothing
     else
         @test JavaCall.init(["-Djava.class.path=$(@__DIR__)"])==nothing
