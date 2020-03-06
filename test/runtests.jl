@@ -263,10 +263,11 @@ end
     if JAVACALL_FORCE_ASYNC_TEST || JavaCall.JULIA_COPY_STACKS || Sys.iswindows()
         @testasync JavaCall.isgoodenv()
     end
-    if JAVACALL_FORCE_ASYNC_TEST || ! JavaCall.JULIA_COPY_STACKS
+    if ! JavaCall.JULIA_COPY_STACKS && ! Sys.iswindows()
         @test_throws CompositeException @syncasync JavaCall.assertroottask_or_goodenv()
         @warn "Ran tests for root Task only." *
-            " REPL and @async are not expected to work with JavaCall without JULIA_COPY_STACKS=1." *
+            " REPL and @async are not expected to work with JavaCall without JULIA_COPY_STACKS=1" *
+            " on non-Windows systems."
             " Set JULIA_COPY_STACKS=1 in the environment to test @async function."
     end
 end
