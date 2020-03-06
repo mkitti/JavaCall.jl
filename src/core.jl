@@ -122,7 +122,7 @@ end
 
 
 function jnew(T::Symbol, argtypes::Tuple, args...)
-    assertroottask()
+    assertroottask_or_goodenv()
     sig = method_signature(Nothing, argtypes...)
     jmethodId = ccall(jnifunc.GetMethodID, Ptr{Nothing},
                       (Ptr{JNIEnv}, Ptr{Nothing}, Ptr{UInt8}, Ptr{UInt8}), penv, metaclass(T),
@@ -136,7 +136,7 @@ end
 # Call static methods
 function jcall(typ::Type{JavaObject{T}}, method::AbstractString, rettype::Type, argtypes::Tuple,
                args... ) where T
-    assertroottask()
+    assertroottask_or_goodenv()
     sig = method_signature(rettype, argtypes...)
     jmethodId = ccall(jnifunc.GetStaticMethodID, Ptr{Nothing},
                       (Ptr{JNIEnv}, Ptr{Nothing}, Ptr{UInt8}, Ptr{UInt8}), penv, metaclass(T),
@@ -147,7 +147,7 @@ end
 
 # Call instance methods
 function jcall(obj::JavaObject, method::AbstractString, rettype::Type, argtypes::Tuple, args... )
-    assertroottask()
+    assertroottask_or_goodenv()
     sig = method_signature(rettype, argtypes...)
     jmethodId = ccall(jnifunc.GetMethodID, Ptr{Nothing},
                       (Ptr{JNIEnv}, Ptr{Nothing}, Ptr{UInt8}, Ptr{UInt8}), penv, metaclass(obj),
@@ -157,7 +157,7 @@ function jcall(obj::JavaObject, method::AbstractString, rettype::Type, argtypes:
 end
 
 function jfield(typ::Type{JavaObject{T}}, field::AbstractString, fieldType::Type) where T
-    assertroottask()
+    assertroottask_or_goodenv()
     jfieldID  = ccall(jnifunc.GetStaticFieldID, Ptr{Nothing},
                       (Ptr{JNIEnv}, Ptr{Nothing}, Ptr{UInt8}, Ptr{UInt8}), penv, metaclass(T),
                       String(field), signature(fieldType))
@@ -166,7 +166,7 @@ function jfield(typ::Type{JavaObject{T}}, field::AbstractString, fieldType::Type
 end
 
 function jfield(obj::JavaObject, field::AbstractString, fieldType::Type)
-    assertroottask()
+    assertroottask_or_goodenv()
     jfieldID  = ccall(jnifunc.GetFieldID, Ptr{Nothing},
                       (Ptr{JNIEnv}, Ptr{Nothing}, Ptr{UInt8}, Ptr{UInt8}), penv, metaclass(obj),
                       String(field), signature(fieldType))
