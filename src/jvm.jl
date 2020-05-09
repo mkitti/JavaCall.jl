@@ -93,7 +93,8 @@ function findjvm()
                 return libpath
             end
         end
-    catch
+    catch err
+        throw(err)
     end
 
     errorMsg =
