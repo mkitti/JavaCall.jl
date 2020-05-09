@@ -119,9 +119,10 @@ function jcall(typ::Type{JavaObject{T}}, method::AbstractString, rettype::Type, 
                args... ) where T
     assertroottask_or_goodenv()
     sig = method_signature(rettype, argtypes...)
-    jmethodId = JNI.GetStaticMethodID(metaclass(T).ptr, String(method), sig)
+    metaT = metaclass(T)
+    jmethodId = JNI.GetStaticMethodID(metaT.ptr, String(method), sig)
     jmethodId==C_NULL && geterror(true)
-    _jcall(metaclass(T), jmethodId, C_NULL, rettype, argtypes, args...)
+    _jcall(metaT, jmethodId, C_NULL, rettype, argtypes, args...)
 end
 
 # Call instance methods
