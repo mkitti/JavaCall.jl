@@ -120,7 +120,7 @@ function jcall(typ::Type{JavaObject{T}}, method::AbstractString, rettype::Type, 
     assertroottask_or_goodenv()
     sig = method_signature(rettype, argtypes...)
     metaT = metaclass(T)
-    jmethodId = JNI.GetStaticMethodID(metaT.ptr, String(method), sig)
+    GC.@preserve metaT method jmethodId = JNI.GetStaticMethodID(metaT.ptr, String(method), sig)
     jmethodId==C_NULL && geterror(true)
     _jcall(metaT, jmethodId, C_NULL, rettype, argtypes, args...)
 end
