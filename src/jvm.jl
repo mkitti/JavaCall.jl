@@ -87,10 +87,10 @@ function findjvm()
                     bindir = dirname(dirname(libpath))
                     m = filter(x -> occursin(r"msvcr(?:.*).dll",x), readdir(bindir))
                     if !isempty(m)
-                        Libdl.dlopen(joinpath(bindir,m[1]))
+                        return (joinpath(bindir,m[1]),libpath)
                     end
                 end
-                return libpath
+                return (libpath,)
             end
         end
     catch err
