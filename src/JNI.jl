@@ -127,14 +127,16 @@ function init_new_vm(libpath,opts)
     libjvm = load_libjvm(libpath)
     create = Libdl.dlsym(libjvm, :JNI_CreateJavaVM)
     opt = [JavaVMOption(pointer(x), C_NULL) for x in opts]
-    vm_args = JavaVMInitArgs(JNI_VERSION_1_8, convert(Cint, length(opts)),
-                             convert(Ptr{JavaVMOption}, pointer(opt)), JNI_TRUE)
-    res = ccall(create, Cint, (Ptr{Ptr{JavaVM}}, Ptr{Ptr{JNIEnv}}, Ptr{JavaVMInitArgs}), pjvm, penv,
-                Ref(vm_args))
-    res < 0 && throw(JNIError("Unable to initialise Java VM: $(res)"))
-    jvm = unsafe_load(pjvm[])
-    global jvmfunc[] = unsafe_load(jvm.JNIInvokeInterface_)
-    JNI.load_jni(penv[])
+    GC.@preserve opt begin
+        vm_args = JavaVMInitArgs(JNI_VERSION_1_8, convert(Cint, length(opts)),
+                                 convert(Ptr{JavaVMOption}, pointer(opt)), JNI_TRUE)
+        res = ccall(create, Cint, (Ptr{Ptr{JavaVM}}, Ptr{Ptr{JNIEnv}}, Ptr{JavaVMInitArgs}), pjvm, penv,
+                    Ref(vm_args))
+        res < 0 && throw(JNIError("Unable to initialise Java VM: $(res)"))
+    end
+    global jvm = unsafe_load(pjvm[])
+    jvmfunc[] = unsafe_load(jvm.JNIInvokeInterface_)
+    load_jni(penv[])
     return
 end
 
@@ -147,10 +149,10 @@ function init_current_vm(libpath)
     libjvm = load_libjvm(libpath)
     pnum = Array{Cint}(undef, 1)
     ccall(Libdl.dlsym(libjvm, :JNI_GetCreatedJavaVMs), Cint, (Ptr{Ptr{JavaVM}}, Cint, Ptr{Cint}), pjvm, 1, pnum)
-    jvm = unsafe_load(pjvm[])
+    global jvm = unsafe_load(pjvm[])
     global jvmfunc[] = unsafe_load(jvm.JNIInvokeInterface_)
     ccall(jvmfunc[].GetEnv, Cint, (Ptr{Nothing}, Ptr{Ptr{JNIEnv}}, Cint), pjvm[], penv, JNI.JNI_VERSION_1_8)
-    JNI.load_jni(penv)
+    load_jni(penv[])
 end
 
 function load_libjvm(libpath::AbstractString)
@@ -170,6 +172,7 @@ function destroy()
     end
     res = ccall(jvmfunc[].DestroyJavaVM, Cint, (Ptr{Nothing},), pjvm[])
     res < 0 && throw(JavaCallError("Unable to destroy Java VM"))
+    global jvm = nothing
     penv[] = C_NULL
     pjvm[] = C_NULL
     nothing
