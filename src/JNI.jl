@@ -134,7 +134,7 @@ function init_new_vm(libpath,opts)
                     Ref(vm_args))
         res < 0 && throw(JNIError("Unable to initialise Java VM: $(res)"))
     end
-    global jvm = unsafe_load(pjvm[])
+    jvm = unsafe_load(pjvm[])
     jvmfunc[] = unsafe_load(jvm.JNIInvokeInterface_)
     load_jni(penv[])
     return
@@ -149,7 +149,7 @@ function init_current_vm(libpath)
     libjvm = load_libjvm(libpath)
     pnum = Array{Cint}(undef, 1)
     ccall(Libdl.dlsym(libjvm, :JNI_GetCreatedJavaVMs), Cint, (Ptr{Ptr{JavaVM}}, Cint, Ptr{Cint}), pjvm, 1, pnum)
-    global jvm = unsafe_load(pjvm[])
+    jvm = unsafe_load(pjvm[])
     global jvmfunc[] = unsafe_load(jvm.JNIInvokeInterface_)
     ccall(jvmfunc[].GetEnv, Cint, (Ptr{Nothing}, Ptr{Ptr{JNIEnv}}, Cint), pjvm[], penv, JNI.JNI_VERSION_1_8)
     load_jni(penv[])
@@ -172,7 +172,7 @@ function destroy()
     end
     res = ccall(jvmfunc[].DestroyJavaVM, Cint, (Ptr{Nothing},), pjvm[])
     res < 0 && throw(JavaCallError("Unable to destroy Java VM"))
-    global jvm = nothing
+    jvm = nothing
     penv[] = C_NULL
     pjvm[] = C_NULL
     nothing
