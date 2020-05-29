@@ -1,7 +1,28 @@
 module JavaCall
-if isdefined(Base, :Experimental) && isdefined(Base.Experimental, Symbol("@optlevel"))
-    @eval Base.Experimental.@optlevel 1
+
+@static if get(ENV, "JAVACALL_PRECOMPILE","") == "false"
+    __precompile__(false)
 end
+
+# Per-module optimization level
+# https://github.com/JuliaLang/julia/pull/34896
+# https://discourse.julialang.org/t/rethinking-optimization-lower-ok-for-all-julia-code-for-e-g-faster-startup-as-a-default/39843
+#
+# Use Base.compilecache(Base.PkgId(JavaCall)) if changed
+@static if get(ENV, "JAVACALL_OPTLEVEL", "") ∈ ("0","1","2","3") &&
+    isdefined(Base, :Experimental) &&
+    isdefined(Base.Experimental, Symbol("@optlevel"))
+    const optlevel = parse(Int,get(ENV, "JAVACALL_OPTLEVEL", ""))
+else
+    const optlevel = -1
+end
+
+if optlevel > -1
+    @eval Base.Experimental.@optlevel($optlevel)
+    @info "JavaCall optlevel set to $optlevel."
+end
+
+@info "JavaCall loaded"
 
 export JavaObject, JavaMetaClass,
        jint, jlong, jbyte, jboolean, jchar, jshort, jfloat, jdouble,
