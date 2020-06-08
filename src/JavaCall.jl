@@ -4,7 +4,7 @@ module JavaCall
 # https://github.com/JuliaLang/julia/pull/34896
 @static if isdefined(Base, :Experimental) &&
            isdefined(Base.Experimental, Symbol("@optlevel"))
-    Base.Experimental.@optlevel 2
+    Base.Experimental.@optlevel 3
 end
 
 export JavaObject, JavaMetaClass,
