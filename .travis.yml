@@ -45,7 +45,7 @@ jobs:
 branches:
   only:
     - master
-    - benchmark_optlevel_3
+    - benchmark_optlevel_0
     - /release-.*/
 
 notifications:
