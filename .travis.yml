@@ -45,6 +45,7 @@ jobs:
 branches:
   only:
     - master
+    - tarotest
     - /release-.*/
 
 notifications:
